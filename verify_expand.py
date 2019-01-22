@@ -9,25 +9,24 @@ import argparse
 
 """verify_expand.py: Will verify if a caption can be made with letters in a picture"""
 __author__ = "Jordan Wolinsky"
-
+# Todo add multiple images to check.  Use the return of image to output to create the caption
+# If it works
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('file', help="file location", type=str)
+  parser.add_argument('files', help="file location", type=str, nargs="+")
   parser.add_argument('caption', help="desired caption", type=str)
   args = parser.parse_args()
-  verify_expand(args.file, args.caption)
+  verify_expand(args.files, args.caption)
 
 
-def verify_expand(file_name, caption):
-  letters = pytesseract.image_to_string(Image.open(file_name), lang='eng')
-  print(letters)
-  print(is_substring(set(caption.lower()), set(letters.lower())))
+def verify_expand(files, caption):
+  letters = set()
+  for f in files:
+    letters |= set(pytesseract.image_to_string(Image.open(f), lang='eng').lower())
 
 
-
-def is_substring(substring, string):
-  return substring.issubset(string)
+  print(set(caption.lower()).issubset(letters))
 
 if __name__ == '__main__':
   main()
